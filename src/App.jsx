@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import './App.css';
 
 function App() {
   const [task, setTask] = useState('');
-  const [priority, setPriority] = useState('normal'); // Ajouter un état pour la priorité
+  const [priority, setPriority] = useState('normal');
   const [columns, setColumns] = useState({
     todo: [],
     inProgress: [],
@@ -21,7 +22,7 @@ function App() {
         todo: [...prev.todo, newTask],
       }));
       setTask('');
-      setPriority('normal'); // Réinitialiser la priorité après l'ajout
+      setPriority('normal');
     }
   };
 
@@ -40,7 +41,6 @@ function App() {
     selectedTasks.forEach((key) => {
       const [column, idx] = key.split('-');
       const index = parseInt(idx, 10);
-
       updatedColumns[column].splice(index, 1);
     });
 
@@ -52,29 +52,6 @@ function App() {
     setSelectedTasks([]);
   };
 
-  const moveTask = (from, index, direction) => {
-    const fromIndex = columnOrder.indexOf(from);
-    const toIndex = fromIndex + direction;
-
-    if (toIndex < 0 || toIndex >= columnOrder.length) return;
-
-    const to = columnOrder[toIndex];
-    const taskToMove = columns[from][index];
-
-    setColumns((prev) => {
-      const newFrom = [...prev[from]];
-      newFrom.splice(index, 1);
-      const newTo = [...prev[to], taskToMove];
-
-      return {
-        ...prev,
-        [from]: newFrom,
-        [to]: newTo,
-      };
-    });
-  };
-
-  // Fonction pour appliquer la couleur de la priorité
   const getPriorityClass = (priority) => {
     switch (priority) {
       case 'urgent':
@@ -88,75 +65,121 @@ function App() {
     }
   };
 
+  const onDragEnd = (result) => {
+    const { source, destination } = result;
+
+    if (!destination) return; // No destination, do nothing
+
+    const sourceCol = source.droppableId;
+    const destCol = destination.droppableId;
+
+    if (sourceCol === destCol) {
+      // Reorder tasks within the same column
+      const reorderedTasks = Array.from(columns[sourceCol]);
+      const [moved] = reorderedTasks.splice(source.index, 1);
+      reorderedTasks.splice(destination.index, 0, moved);
+
+      setColumns((prev) => ({
+        ...prev,
+        [sourceCol]: reorderedTasks,
+      }));
+    } else {
+      // Move tasks from one column to another
+      const sourceTasks = Array.from(columns[sourceCol]);
+      const destTasks = Array.from(columns[destCol]);
+      const [moved] = sourceTasks.splice(source.index, 1);
+      destTasks.splice(destination.index, 0, moved);
+
+      setColumns((prev) => ({
+        ...prev,
+        [sourceCol]: sourceTasks,
+        [destCol]: destTasks,
+      }));
+    }
+  };
+
   return (
     <div className="app-container">
       <h1>Tableau des Tâches</h1>
 
       <div className="input-container">
-        <input
-          type="text"
-          placeholder="Nouvelle tâche..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addTask()}
-        />
-        <select onChange={(e) => setPriority(e.target.value)} value={priority}>
-          <option value="normal">Normal</option>
-          <option value="urgent">Urgent</option>
-          <option value="low">Pas urgent</option>
-        </select>
-        <button onClick={addTask}>Ajouter</button>
-      </div>
+  <input
+    type="text"
+    placeholder="Nouvelle tâche..."
+    value={task}
+    onChange={(e) => setTask(e.target.value)}
+    onKeyDown={(e) => e.key === 'Enter' && addTask()}
+  />
+  <select onChange={(e) => setPriority(e.target.value)} value={priority}>
+    <option value="normal">Normal</option>
+    <option value="urgent">Urgent</option>
+    <option value="low">Pas urgent</option>
+  </select>
+  <button onClick={addTask}>Ajouter</button>
 
-      {selectedTasks.length > 0 && (
-        <div className="delete-bar">
-          <button onClick={deleteSelectedTasks}>
-            Supprimer les tâches sélectionnées ({selectedTasks.length})
-          </button>
-        </div>
-      )}
+  {selectedTasks.length > 0 && (
+    <div className="delete-inline">
+      <button onClick={deleteSelectedTasks}>
+        Supprimer ({selectedTasks.length})
+      </button>
+    </div>
+  )}
+</div>
 
-      <div className="board">
-        {columnOrder.map((column) => (
-          <div key={column} className="column">
-            <h2>
-              {column === 'todo' && 'À faire'}
-              {column === 'inProgress' && 'En cours'}
-              {column === 'done' && 'Terminé'}
-            </h2>
 
-            {columns[column].length === 0 ? (
-              <p className="empty">Aucune tâche</p>
-            ) : (
-              columns[column].map((taskObj, index) => (
-                <div
-                  key={index}
-                  className={`task-item ${getPriorityClass(taskObj.priority)}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedTasks.includes(`${column}-${index}`)}
-                    onChange={() => toggleSelectTask(column, index)}
-                  />
-                  <span>{taskObj.text}</span>
-                  <div className="actions">
-                    {column !== 'todo' && (
-                      <button onClick={() => moveTask(column, index, -1)}>
-                        ←
-                      </button>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="board">
+          {columnOrder.map((columnId) => (
+            <div key={columnId} className="column-container">
+              <h2 className="column-title">
+                {columnId === 'todo' && 'À faire'}
+                {columnId === 'inProgress' && 'En cours'}
+                {columnId === 'done' && 'Terminé'}
+              </h2>
+
+              <Droppable key={columnId} droppableId={columnId}>
+                {(provided) => (
+                  <div
+                    className="column"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {columns[columnId].length === 0 ? (
+                      <p className="empty">Aucune tâche</p>
+                    ) : (
+                      columns[columnId].map((taskObj, index) => (
+                        <Draggable
+                          key={`${columnId}-${index}`}
+                          draggableId={`${columnId}-${index}`}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={`task-item ${getPriorityClass(taskObj.priority)}`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedTasks.includes(`${columnId}-${index}`)}
+                                onChange={() => toggleSelectTask(columnId, index)}
+                              />
+                              <span>{taskObj.text}</span>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
                     )}
-                    {column !== 'done' && (
-                      <button onClick={() => moveTask(column, index, 1)}>
-                        →
-                      </button>
-                    )}
+                    {provided.placeholder}
                   </div>
-                </div>
-              ))
-            )}
-          </div>
-        ))}
-      </div>
+                )}
+              </Droppable>
+            </div>
+          ))}
+        </div>
+      </DragDropContext>
     </div>
   );
 }
