@@ -1,55 +1,183 @@
-/* App.css */
-
-/* Structure globale */
-.app-container {
-    font-family: Arial, sans-serif;
-    color: white;
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #1e1e2f;
+    color: #ffffff;
     min-height: 100vh;
-    padding: 20px;
+    padding: 2rem;
   }
   
-  .app-header {
+  /* Container principal */
+  .app-container {
+    background-color: #2c2c3e;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Titre */
+  .app-container h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #b23d89;
     text-align: center;
-    margin-bottom: 30px;
   }
   
-  .app-header h1 {
-    color: #b23d89; /* Violet accent */
+  /* Zone d’ajout de tâche */
+  .input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #2c2c3e;
+    padding: 10px;
+    border-radius: 10px;
   }
   
-  /* Conteneur des colonnes */
-  .columns-container {
+  .input-container input,
+  .input-container select {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #1e1e2f;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .input-container button {
+    padding: 0.75rem 1.25rem;
+    background-color: #b23d89;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .input-container button:hover {
+    background-color: #d74fa4;
+  }
+  
+  /* Tableau Kanban */
+  .board {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  
+  .column {
+    background-color: #1e1e2f;
+    border-radius: 12px;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .column h2 {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .empty {
+    font-style: italic;
+    color: #aaa;
+    text-align: center;
+  }
+  
+  /* Carte de tâche */
+  .task-item {
+    background-color: #3a3a55;
+    padding: 0.75rem;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
     display: flex;
     justify-content: space-between;
-    gap: 20px;
+    align-items: center;
+    gap: 0.5rem;
   }
   
-  /* Chaque colonne */
-  .column {
-    width: 30%;
-    background-color: #2d2d44; /* Colonne légèrement plus claire */
-    padding: 20px;
-    border-radius: 8px;
+  .task-item input[type="checkbox"] {
+    margin-right: 0.5rem;
   }
   
-  /* Titre des colonnes */
-  .column h2 {
-    color: #b23d89; /* Violet accent */
-    margin-bottom: 15px;
+  .task-item span {
+    flex: 1;
+    word-break: break-word;
   }
   
-  /* Cartes de tâches */
-  .task-card {
-    background-color: #3d3d5c; /* Cartes légèrement plus claires que la colonne */
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .task-card:hover {
-    background-color: #b23d89; /* Changement de couleur au hover */
+  .actions button {
+    background: none;
+    border: none;
+    color: #b23d89;
+    font-size: 1rem;
     cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .actions button:hover {
+    color: #d74fa4;
+  }
+  
+  /* Priorités */
+  .task-item.urgent {
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  
+  .task-item.normal {
+    background-color: #6a4c9c;
+    color: white;
+  }
+  
+  .task-item.low {
+    background-color: #5c3c78;
+    color: white;
+  }
+  
+  @keyframes blink {
+    0% {
+      background-color: #ff4d4d;
+    }
+    50% {
+      background-color: #ffcccc;
+    }
+    100% {
+      background-color: #ff4d4d;
+    }
+  }
+  
+  /* Barre de suppression */
+  .delete-bar {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .delete-bar button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+  }
+  
+  .delete-bar button:hover {
+    background-color: #ff4c4c;
   }
   
