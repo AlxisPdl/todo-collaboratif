@@ -1,0 +1,55 @@
+/* App.css */
+
+/* Structure globale */
+.app-container {
+    font-family: Arial, sans-serif;
+    color: white;
+    background-color: #1e1e2f;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .app-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .app-header h1 {
+    color: #b23d89; /* Violet accent */
+  }
+  
+  /* Conteneur des colonnes */
+  .columns-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  /* Chaque colonne */
+  .column {
+    width: 30%;
+    background-color: #2d2d44; /* Colonne légèrement plus claire */
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  /* Titre des colonnes */
+  .column h2 {
+    color: #b23d89; /* Violet accent */
+    margin-bottom: 15px;
+  }
+  
+  /* Cartes de tâches */
+  .task-card {
+    background-color: #3d3d5c; /* Cartes légèrement plus claires que la colonne */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .task-card:hover {
+    background-color: #b23d89; /* Changement de couleur au hover */
+    cursor: pointer;
+  }
+  
